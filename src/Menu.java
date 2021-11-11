@@ -1,4 +1,4 @@
-import jdk.jshell.spi.ExecutionControlProvider;
+ import jdk.jshell.spi.ExecutionControlProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.desktop.SystemSleepEvent;
@@ -7,118 +7,166 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Scanner;
+ import java.util.Locale;
+ import java.util.Scanner;
 
 public class Menu {
     private final String opciones =
-            "1. Borrar tabla\n" +
-            "2. Crear tabla\n" +
-            "3. Insertar en tabla\n" +
-            "4. Dar de alta un pedido\n" +
-            "5. Mostrar contenido de la tabla\n" +
-            "6. Salir del programa\n";
+            "1. Reset de tablas" +
+            "2. Dar de alta un pedido\n" +
+            "3. Mostrar contenido de la tabla\n" +
+            "4. Salir del programa\n";
     
     private OracleConnection mi_conexion;
     private Scanner capt;
 
-
+    /**
+     * @brief Inicializador
+     * @param conn Conexión con la base de datos
+     */
     public Menu(OracleConnection conn){
         mi_conexion = conn;
         capt = new Scanner(System.in);
     }
 
-
+    /**
+     * @brief Muestra el menú de la aplicación
+     */
     public void mostrarMenu(){
         System.out.print(opciones);
     }
 
-    public void seleccionarOpcion(@NotNull int eleccion)
-    {
+    /**
+     * @brief Permite seleccionar una opción del menú
+     */
+    public void seleccionarOp(){
+        int eleccion = capt.nextInt();
+        boolean estado = true;
         switch(eleccion){
-            case 1 ->infoReset();
+            case 1 -> infoReset();
             case 2 -> infoInsertar();
             case 3 -> infoDarAlta();
             case 4 -> infoMostrar();
             case 5 -> salir();
+            default -> estado = false;
         }
     }
 
-    private void infoReset() {
-
+    /**
+     * @brief Resetea la información de las tablas almacenadas
+     */
+     private void infoReset() {
+        System.out.println("¿Desea resetear las tablas? (s/n)");
+        String reset = capt.nextLine(); // Esto diferencia entre "S" y "s"?
+        reset.toUpperCase();
+        if(reset == "s" || reset == "S"){
+            Tienda.reset();
+        }
     }
+
+    /**
+     * @brief Inserta la información
+     */
+
     private void infoInsertar(){
 
     }
+
+    /**
+     * @brief Inserta la información
+     */
     private void infoDarAlta(){
+        //Capturar datos básicos: código del pedido, nombre y cantidad de cada material, cif ?,
+        // nombre del patrocinador, nº pista, fecha, trabajador ?
+        infoInsertar();
 
+        System.out.println("1. Añadir detalle de producto \n" +
+                          "2. Eliminartodos los detalles de producto \n" +
+                          "3. Cancelar pedido \n" +                     "4. Finalizar pedido");
+        int eleccion = capt.nextInt();
+        switch(eleccion){
+            case 1:
+                //Capturar datos articulo y cantidad
+                //Si hay stok --> realizar inserción y actualizar
+                infoMostrar();
+                break;
+            case 2:
+                infoMostrar();
+                break;
+            case 3:
+                infoMostrar();
+                break;
+            case 4:
+                break;
+        }
     }
+
+    /**
+     * @brief Muestra la información (qué info? --> contenido de las tablas de la BD
+     */
     private void infoMostrar(){
-
+//        ArrayList<String> nombre_tablas = new ArrayList<>();
+//        try(ResultSet rs = mi_conexion.consultar("SELECT TABLE_NAME FROM USER_TABLES")){
+//            while (rs.next()){
+//                nombre_tablas.add(rs.getString("TABLE_NAME"));
+//            }
+//        }
+//        for (String nombre : nombre_tablas){
+//            try (ResultSet rs = mi_conexion.consultar("Select * from " + nombre)){
+//                System.out.println("Mostrando tabla " + nombre);
+//                mostrarTabla();
+//            }catch (Exception e){
+//                System.out.println("Error al mostrar la tabla " + nombre);
+//                mi_conexion.cerrarConexion();
+//                e.printStackTrace();
+//            }
+//        }
     }
+
+    /**
+     * @brief Cierra la conexión con la base de datos
+     */
     public void salir(){
         mi_conexion.cerrarConexion();
         System.out.println("Hasta la próxima!");
     }
 
-    public boolean borrarTablas(){
-        boolean correcto = true;
-        ArrayList<String> nombre_tablas = new ArrayList<>();
-        try(ResultSet rs = mi_conexion.consultar("SELECT TABLE_NAME FROM USER_TABLES")){
-            while (rs.next()){
-                nombre_tablas.add(rs.getString("TABLE_NAME"));
-            }
-        } catch (Exception e){
-            correcto = false;
-            mi_conexion.cerrarConexion();
-            e.printStackTrace();
-        }
+    /**
+     * @brief Borra las tablas seleccionadas
+     * @return @true si la operación se ha realizado con éxito @false en caso contrario
+     */
 
-        for (String nombre : nombre_tablas){
-            try (ResultSet rs = mi_conexion.consultar("DROP TABLE " + nombre)){
-                System.out.println("Borrando tabla " + nombre);
-            }catch (Exception e){
-                correcto = false;
-                System.out.println("Error borrando tabla " + nombre);
-                mi_conexion.cerrarConexion();
-                e.printStackTrace();
-            }
-        }
 
-        return correcto;
-    }
+    /**
+     * @brief Function that creates database's tables
+     * @return @true si la operación ha sido realizada con éxito @false en caso contrario
 
-    public boolean crearTablas(){
-        boolean correcto = true;
-        ArrayList<String> nombres_tabla = new ArrayList<>();
-        ArrayList<String> columnas = new ArrayList<>();
-        nombres_tabla.add("PRUEBA1");
-        columnas.add("(nombre1 VARCHAR2(30), n1 NUMBER PRIMARY KEY)");
-        nombres_tabla.add("PRUEBA2");
-        columnas.add("(nombre2 VARCHAR2(30), n2 NUMBER PRIMARY KEY)");
-        nombres_tabla.add("PRUEBA3");
-        columnas.add("(nombre3 VARCHAR2(30), n3 NUMBER PRIMARY KEY)");
 
-        for (int i=0; i < nombres_tabla.size(); i++) {
-            try (ResultSet rs = mi_conexion.consultar("CREATE TABLE " + nombres_tabla.get(i) + columnas.get(i))) {
-                System.out.println("Creada tabla " + nombres_tabla.get(i));
-            } catch (Exception e) {
-                System.out.println("Error creando tabla " + nombres_tabla.get(i));
-                mi_conexion.cerrarConexion();
-                correcto = false;
-                e.printStackTrace();
-            }
-        }
-        return correcto;
-    }
-
+    /**
+     * @brief
+     * @param tabla La tabla a insertar
+     * @return
+     */
     private boolean insertarTabla(String tabla){
-        return false;
+        boolean res = false;
+
+        return res;
     }
 
+    /**
+     * @brief Inserta una tupla en una tabla
+     * @param tabla La tabla en la que se inserta
+     * @param tupla La tupla a insertar
+     * @return
+     */
     private boolean darAlta(String tabla, String tupla){
         return false;
     }
 
+    /**
+     * @brief Muestra la tabla seleccionada
+     * @return @true si la operación se ha completado con éxito @false en caso contrario
+     */
     public boolean mostrarTabla() {
         boolean correcto = true;
         try (ResultSet rs = mi_conexion.consultar("SELECT TABLE_NAME FROM USER_TABLES")) {

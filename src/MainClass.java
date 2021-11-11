@@ -3,18 +3,25 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 public class MainClass{
 
-
+    /**
+     * @brief Main function of the program
+     * @param args
+     * @throws SQLException
+     */
     public static void main(String [] args) throws SQLException {
-        Menu m = new Menu(new OracleConnection("x6752695", "x6752695", false));
-        System.out.println("Antes de hacer nada");
+        Menu m = new Menu(new OracleConnection("", "", false));
+        m.mostrarMenu();
+        m.seleccionarOp(); // E: He cambiado seleccionarOpcion por seleccionarOp, que es el verdadero nombre de la función
+
+        /*System.out.println("Antes de hacer nada");
         m.mostrarTabla();
         m.borrarTablas();
         System.out.println("Después de borrar");
         m.mostrarTabla();
         m.crearTablas();
         System.out.println("Después de crear");
-        m.mostrarTabla();
-        m.salir();
+        m.mostrarTabla();*/
+//        m.salir();
 //
 //
 //        m.mostrarMenu();
