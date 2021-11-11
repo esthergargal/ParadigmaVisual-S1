@@ -1,14 +1,6 @@
- import jdk.jshell.spi.ExecutionControlProvider;
-import org.jetbrains.annotations.NotNull;
-
-import java.awt.desktop.SystemSleepEvent;
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
- import java.util.Locale;
- import java.util.Scanner;
+import java.util.Scanner;
 
 public class Menu {
     private final String opciones =
@@ -41,44 +33,38 @@ public class Menu {
      */
     public void seleccionarOp(){
         int eleccion = capt.nextInt();
-        boolean estado = true;
+        //boolean estado = true;
         switch(eleccion){
             case 1 -> infoReset();
-            case 2 -> infoInsertar();
-            case 3 -> infoDarAlta();
-            case 4 -> infoMostrar();
-            case 5 -> salir();
-            default -> estado = false;
+            case 2 -> infoDarAlta();
+            case 3 -> infoMostrar();
+            case 4 -> salir();
+            default -> salir();
+            //default -> estado = false;
         }
     }
 
     /**
      * @brief Resetea la información de las tablas almacenadas
+     * @return @true si se desea resetear las tablas @false en caso contrario
      */
-     private void infoReset() {
+     private boolean infoReset() {
         System.out.println("¿Desea resetear las tablas? (s/n)");
-        String reset = capt.nextLine(); // Esto diferencia entre "S" y "s"?
+        String reset = capt.nextLine();
         reset.toUpperCase();
-        if(reset == "s" || reset == "S"){
-            Tienda.reset();
-        }
+
+        return reset == "S";
+        // Tienda.reset();
     }
 
-    /**
-     * @brief Inserta la información
-     */
-
-    private void infoInsertar(){
-
-    }
 
     /**
-     * @brief Inserta la información
+     * @brief Muestra la información sobre el método darAlta()
      */
     private void infoDarAlta(){
         //Capturar datos básicos: código del pedido, nombre y cantidad de cada material, cif ?,
         // nombre del patrocinador, nº pista, fecha, trabajador ?
-        infoInsertar();
+        // infoInsertar(); // E: he quitado esta operacion por que es la misma que dar de alta
 
         System.out.println("1. Añadir detalle de producto \n" +
                           "2. Eliminartodos los detalles de producto \n" +
@@ -87,7 +73,7 @@ public class Menu {
         switch(eleccion){
             case 1:
                 //Capturar datos articulo y cantidad
-                //Si hay stok --> realizar inserción y actualizar
+                //Si hay stock --> realizar inserción y actualizar
                 infoMostrar();
                 break;
             case 2:
@@ -124,23 +110,14 @@ public class Menu {
     }
 
     /**
-     * @brief Cierra la conexión con la base de datos
+     * @brief Inserta una tupla en una tabla
+     * @param tabla La tabla en la que se inserta
+     * @param tupla La tupla a insertar
+     * @return
      */
-    public void salir(){
-        mi_conexion.cerrarConexion();
-        System.out.println("Hasta la próxima!");
+    private boolean darAlta(String tabla, String tupla){
+        return false;
     }
-
-    /**
-     * @brief Borra las tablas seleccionadas
-     * @return @true si la operación se ha realizado con éxito @false en caso contrario
-     */
-
-
-    /**
-     * @brief Function that creates database's tables
-     * @return @true si la operación ha sido realizada con éxito @false en caso contrario
-
 
     /**
      * @brief
@@ -151,16 +128,6 @@ public class Menu {
         boolean res = false;
 
         return res;
-    }
-
-    /**
-     * @brief Inserta una tupla en una tabla
-     * @param tabla La tabla en la que se inserta
-     * @param tupla La tupla a insertar
-     * @return
-     */
-    private boolean darAlta(String tabla, String tupla){
-        return false;
     }
 
     /**
@@ -181,5 +148,13 @@ public class Menu {
             e.printStackTrace();
         }
         return correcto;
+    }
+
+    /**
+     * @brief Cierra la conexión con la base de datos
+     */
+    public void salir(){
+        mi_conexion.cerrarConexion();
+        System.out.println("Hasta la próxima!");
     }
 }
